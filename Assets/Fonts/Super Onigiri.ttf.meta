@@ -1,0 +1,22 @@
+fileFormatVersion: 2
+guid: 844e0dbc8520f244e99bc78e32f9773d
+timeCreated: 1764757149
+licenseType: Pro
+TrueTypeFontImporter:
+  serializedVersion: 4
+  fontSize: 8
+  forceTextureCase: -2
+  characterSpacing: 0
+  characterPadding: 1
+  includeFontData: 1
+  fontName: Super Onigiri
+  fontNames:
+  - Super Onigiri
+  fallbackFontReferences: []
+  customCharacters: 
+  fontRenderingMode: 1
+  ascentCalculationMode: 1
+  useLegacyBoundsCalculation: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
