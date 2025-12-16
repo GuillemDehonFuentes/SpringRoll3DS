@@ -1,5 +1,6 @@
-﻿using UnityEditor;
+﻿#if UNITY_EDITOR
 using UnityEngine;
+using UnityEditor;
 
 public class LocalizationTableEditor : EditorWindow
 {
@@ -59,9 +60,6 @@ public class LocalizationTableEditor : EditorWindow
         Selection.activeObject = table;
     }
 
-    // -------------------------------
-    // IDIOMAS
-    // -------------------------------
     private void DrawLanguageSection()
     {
         GUILayout.Label("Idiomas", EditorStyles.boldLabel);
@@ -173,3 +171,4 @@ public class LocalizationTableEditor : EditorWindow
         EditorGUILayout.EndScrollView();
     }
 }
+#endif
