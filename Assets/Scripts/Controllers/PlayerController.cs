@@ -17,22 +17,6 @@ public class PlayerController : MonoBehaviour
     [Header("Character References")]
     public Animator characterAnimator;
 
-    [Header("Collectible Mass")]
-    public float massPerCollectible = 0.5f;
-    public float massIncreaseDuration = 0.5f;
-
-    [Header("Katamari Growth")]
-    public float scalePerCollectible = 0.05f;
-    public float scaleGrowthDuration = 0.4f;
-    public float maxScale = 5f;
-
-    [Header("Katamari Force Scaling")]
-    public float baseScale = 1f;              // Escala inicial del player
-    public float minForceMultiplier = 0.4f;   // Fuerza mínima cuando es muy grande
-    public float maxForceMultiplier = 1.2f;   // Fuerza máxima cuando es pequeño
-
-
-
     private Rigidbody rb;
 
     // Animator hashes
@@ -122,7 +106,6 @@ public class PlayerController : MonoBehaviour
         characterAnimator.SetBool(animLeft, left);
     }
 
-    // 🔥 Animaciones Around (L / R o Q / E)
     void UpdateAroundAnimator()
     {
         bool moving = IsMoving();
@@ -132,16 +115,15 @@ public class PlayerController : MonoBehaviour
 
 #if UNITY_EDITOR
 
-            if (Input.GetKey(KeyCode.Q))
-                leftAround = true;
-            else if (Input.GetKey(KeyCode.E))
-                rightAround = true;
-
+        if (Input.GetKey(KeyCode.Q))
+            leftAround = true;
+        else if (Input.GetKey(KeyCode.E))
+            rightAround = true;
 #else
 
-            if (GamePad.GetButton(GamePad.Button.L))
+            if (GamePad.GetButtonHold(N3dsButton.L))
                 leftAround = true;
-            else if (GamePad.GetButton(GamePad.Button.R))
+            else if (GamePad.GetButtonHold(N3dsButton.R))
                 rightAround = true;
         
 #endif
@@ -164,84 +146,4 @@ public class PlayerController : MonoBehaviour
         float realSpeed = horizontalVelocity.magnitude;
         return Mathf.Clamp((realSpeed / maxSpeed) * 3f, 0f, 3f);
     }
-
-    void OnCollisionEnter(Collision collision)
-    {
-        if (!collision.gameObject.CompareTag("Collectible"))
-            return;
-
-        GameObject collectible = collision.gameObject;
-
-        collectible.transform.SetParent(transform);
-
-        Collider col = collectible.GetComponent<Collider>();
-        if (col != null)
-            Destroy(col);
-
-        Rigidbody rbCollectible = collectible.GetComponent<Rigidbody>();
-        if (rbCollectible != null)
-            Destroy(rbCollectible);
-
-        // 🔥 Crecimiento Katamari
-        StartCoroutine(GrowPlayer(scalePerCollectible));
-
-        // 🔥 Aumentar masa (si ya lo tienes)
-        StartCoroutine(IncreasePlayerMass(massPerCollectible));
-    }
-
-    IEnumerator GrowPlayer(float addedScale)
-    {
-        Vector3 startScale = transform.localScale;
-        Vector3 targetScale = startScale + Vector3.one * addedScale;
-
-        // Limitar tamaño máximo
-        if (targetScale.x > maxScale)
-            targetScale = Vector3.one * maxScale;
-
-        float elapsed = 0f;
-
-        while (elapsed < scaleGrowthDuration)
-        {
-            elapsed += Time.deltaTime;
-            transform.localScale = Vector3.Lerp(startScale, targetScale, elapsed / scaleGrowthDuration);
-            yield return null;
-        }
-
-        transform.localScale = targetScale;
-       
-    }
-
-
-    IEnumerator IncreasePlayerMass(float addedMass)
-    {
-        float startMass = rb.mass;
-        float targetMass = startMass + addedMass;
-
-        float elapsed = 0f;
-
-        while (elapsed < massIncreaseDuration)
-        {
-            elapsed += Time.deltaTime;
-            rb.mass = Mathf.Lerp(startMass, targetMass, elapsed / massIncreaseDuration);
-            yield return null;
-        }
-
-        rb.mass = targetMass;
-    }
-
-    float GetForceMultiplierByScale()
-    {
-        float currentScale = transform.localScale.x;
-
-        // Normalizamos el tamaño respecto a la escala base
-        float scaleRatio = currentScale / baseScale;
-
-        // Cuanto más grande, menos fuerza
-        // Usamos inversa para efecto Katamari
-        float multiplier = 1f / scaleRatio;
-
-        // Clamp para evitar extremos
-        return Mathf.Clamp(multiplier, minForceMultiplier, maxForceMultiplier);
-    }
-
 }
